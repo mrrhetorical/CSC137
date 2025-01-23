@@ -1,6 +1,6 @@
 package pkgSNSDriver;
 
-public class Main {
+public class CSCSNSDriver {
 	public static void main(String[] args) {
 		System.out.println("Hello, World!");
 	}

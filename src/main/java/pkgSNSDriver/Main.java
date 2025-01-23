@@ -1,4 +1,4 @@
-package com.rhetorical;
+package pkgSNSDriver;
 
 public class Main {
 	public static void main(String[] args) {

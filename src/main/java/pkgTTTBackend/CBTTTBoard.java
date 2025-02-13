@@ -4,83 +4,72 @@ import java.util.Scanner;
 
 public class CBTTTBoard {
 
-	private enum CellState {
-		PLAYER, COMPUTER, EMPTY;
+	private final char machine_char = 'C';
+	private final char ROW = 3;
+	private int totalValidentries;
+	private char winner_char;
+	private final char default_char = '-';
+	private final char COL = 3;
+	private final char[][] ttt_board = new char[ROW][COL];
+	private final char player_char = 'P';
 
-		@Override
-		public String toString() {
-			return switch (this) {
-				case PLAYER -> "P";
-				case COMPUTER -> "C";
-				case EMPTY -> "-";
-			};
+
+	public char[][] getBoard() {
+		return ttt_board;
+	}
+
+	public void testPlay() {
+		throw new RuntimeException();
+	}
+
+	public void clearBoard() {
+		for (int r = 0; r < ROW; r++) {
+			for (int c = 0; c < COL; c++) {
+				ttt_board[r][c] = default_char;
+			}
 		}
 	}
 
-	private enum GameState {
-		PLAYER_TURN, COMPUTER_TURN, GAME_OVER
+	private boolean updateBoard(int row, int col) {
+		throw new RuntimeException();
 	}
 
-	private final CellState[][] board = new CellState[3][3];
+	public void play() {
+		while (!isFull()) {
+			playPlayerTurn();
+			printBoard();
+		}
+	}
 
-	private GameState gameState = GameState.PLAYER_TURN;
+
 	private final Scanner scanner;
 
 	public CBTTTBoard() {
 		scanner = new Scanner(System.in);
-		for (int r = 0; r < 3; r++) {
-			for (int c = 0; c < 3; c++) {
-				board[r][c] = CellState.EMPTY;
-			}
-		}
+		clearBoard();
 	}
 
 	public void printBoard() {
 		for (int r = 0; r < 3; r++) {
-			System.out.printf("%s   %s   %s\n\n", board[r][0].toString(), board[r][1].toString(), board[r][2].toString());
+			System.out.printf("%s   %s   %s\n\n", ttt_board[r][0], ttt_board[r][1], ttt_board[r][2]);
 		}
 	}
 
 	public boolean isFull() {
-		int n = 0; // non-empty spaces
-		for (int r = 0; r < 3; r++) {
-			for (int c = 0; c < 3; c++) {
-				if (board[r][c] != CellState.EMPTY) {
-					n++;
+		for (int r = 0; r < ROW; r++) {
+			for (int c = 0; c < COL; c++) {
+				if (ttt_board[r][c] != default_char) {
+					return false;
 				}
 			}
 		}
-		return n == 9;
-	}
-
-	public void play() {
-		while (gameState != GameState.GAME_OVER) {
-			switch (gameState) {
-				case PLAYER_TURN:
-					playPlayerTurn();
-					// todo: make computer turn once we create the computer turn probably in another assignment
-					// gameState = GameState.COMPUTER_TURN;
-					break;
-				case COMPUTER_TURN:
-					playComputerTurn();
-					gameState = GameState.PLAYER_TURN;
-					break;
-				default:
-					throw new IllegalStateException("Unexpected value: " + gameState);
-			}
-			// Post-turn, so printing the board
-			printBoard();
-			// End the game if the board is full
-			if (isFull()) {
-				gameState = GameState.GAME_OVER;
-			}
-		}
+		return true;
 	}
 
 	public void playPlayerTurn() {
 
 		int row = -1, col = -1;
-		while (row == -1 || col == -1 || board[row][col] != CellState.EMPTY) {
+		while (row == -1 || col == -1 || ttt_board[row][col] != default_char) {
 			System.out.println("Enter the row and col for your entry - space (only) separated:");
 			row = scanner.nextInt();
 			col = scanner.nextInt();
@@ -90,12 +79,12 @@ public class CBTTTBoard {
 				continue;
 			}
 
-			if (board[row][col] != CellState.EMPTY) {
+			if (ttt_board[row][col] != default_char) {
 				System.out.println("The cell is already marked. Please try again.");
 			}
 		}
 
-		board[row][col] = CellState.PLAYER;
+		ttt_board[row][col] = player_char;
 	}
 
 	public void playComputerTurn() {

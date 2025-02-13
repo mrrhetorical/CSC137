@@ -21,7 +21,7 @@ public class Assignment_1Driver {
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
     long window;
-    static int WIN_WIDTH = 1800, WIN_HEIGHT = 1200;
+    static int WIN_WIDTH = 1800 / 3, WIN_HEIGHT = 1200 / 3;
     int WIN_POS_X = 30, WIN_POX_Y = 90;
     private static final int OGL_MATRIX_SIZE = 16;
     // call glCreateProgram() here - we have no gl-context here
@@ -109,7 +109,7 @@ public class Assignment_1Driver {
         glShaderSource(fs,
                 "uniform vec3 color;" +
                         "void main(void) {" +
-                        " gl_FragColor = vec4(0.7f, 0.5f, 0.1f, 1.0f);" +
+                        " gl_FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);" +
                         "}");
         glCompileShader(fs);
         glAttachShader(shader_program, fs);

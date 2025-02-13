@@ -19,7 +19,16 @@ public class CBTTTBoard {
 	}
 
 	public void testPlay() {
-//		throw new RuntimeException();
+		CBIOManager.printBoard(this);
+		while (!isFull()) {
+			int status = testPlayPlayerTurn();
+			if (status == 0) {
+				CBIOManager.printBoard(this);
+			} else if (status == 1) {
+				break;
+			}
+		}
+		CBIOManager.quitGameMessage();
 	}
 
 	public void clearBoard() {
@@ -47,9 +56,10 @@ public class CBTTTBoard {
 			if (status == 0) {
 				CBIOManager.printBoard(this);
 			} else if (status == 1) {
-				CBIOManager.quitGameMessage();
+				break;
 			}
 		}
+		CBIOManager.quitGameMessage();
 	}
 
 
@@ -72,6 +82,22 @@ public class CBTTTBoard {
 		return true;
 	}
 
+	private int testPlayPlayerTurn() {
+		for (int r = 0; r < ROW; r++) {
+			for (int c = 0; c < COL; c++) {
+				if (isOccupied(r, c))
+					continue;
+
+				if (updateBoard(r, c))
+					return 0;
+			}
+		}
+		return 1;
+	}
+
+	/**
+	 * @return 0 if the game is not over, or 1 if the player quits
+	 * */
 	private int playPlayerTurn() {
 
 		int row = -1, col = -1;
@@ -80,7 +106,6 @@ public class CBTTTBoard {
 		while (!validEntry) {
 			CBIOManager.rowColPrompt();
 			if (CBIOManager.readQuitInput()) {
-				CBIOManager.quitGameMessage();
 				return 1;
 			}
 

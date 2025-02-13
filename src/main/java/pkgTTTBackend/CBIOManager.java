@@ -15,7 +15,7 @@ public class CBIOManager {
 	}
 
 	public static boolean readQuitInput() {
-		return !myScanner.hasNextInt() && myScanner.hasNextLine() && myScanner.nextLine().equalsIgnoreCase("q");
+		return !myScanner.hasNextInt() && myScanner.hasNext() && myScanner.next().equalsIgnoreCase("q");
 	}
 
 	public static void boardCompleteMessage() {

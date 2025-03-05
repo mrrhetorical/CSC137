@@ -15,11 +15,20 @@ public class CBTTTBoard {
 
 
 	public char[][] getBoard() {
-		return ttt_board;
+		return ttt_board.clone();
 	}
 
 	public void testPlay() {
-		throw new RuntimeException();
+		CBIOManager.printBoard(this);
+		while (!isFull()) {
+			int status = testPlayPlayerTurn();
+			if (status == 0) {
+				CBIOManager.printBoard(this);
+			} else if (status == 1) {
+				break;
+			}
+		}
+		CBIOManager.quitGameMessage();
 	}
 
 	public void clearBoard() {
@@ -30,35 +39,42 @@ public class CBTTTBoard {
 		}
 	}
 
+	// It's not clear what this is supposed to do from the UML. this is my best guess.
 	private boolean updateBoard(int row, int col) {
-		throw new RuntimeException();
+		if (isOccupied(row, col)) {
+			return false;
+		}
+
+		ttt_board[row][col] = player_char;
+		return true;
 	}
 
 	public void play() {
+		CBIOManager.printBoard(this);
 		while (!isFull()) {
-			playPlayerTurn();
-			printBoard();
+			int status = playPlayerTurn();
+			if (status == 0) {
+				CBIOManager.printBoard(this);
+			} else if (status == 1) {
+				break;
+			}
 		}
+		CBIOManager.quitGameMessage();
 	}
 
 
-	private final Scanner scanner;
-
 	public CBTTTBoard() {
-		scanner = new Scanner(System.in);
 		clearBoard();
 	}
 
 	public void printBoard() {
-		for (int r = 0; r < 3; r++) {
-			System.out.printf("%s   %s   %s\n\n", ttt_board[r][0], ttt_board[r][1], ttt_board[r][2]);
-		}
+
 	}
 
 	public boolean isFull() {
 		for (int r = 0; r < ROW; r++) {
 			for (int c = 0; c < COL; c++) {
-				if (ttt_board[r][c] != default_char) {
+				if (ttt_board[r][c] == default_char) {
 					return false;
 				}
 			}
@@ -66,28 +82,57 @@ public class CBTTTBoard {
 		return true;
 	}
 
-	public void playPlayerTurn() {
+	private int testPlayPlayerTurn() {
+		for (int r = 0; r < ROW; r++) {
+			for (int c = 0; c < COL; c++) {
+				if (isOccupied(r, c))
+					continue;
+
+				if (updateBoard(r, c))
+					return 0;
+			}
+		}
+		return 1;
+	}
+
+	/**
+	 * @return 0 if the game is not over, or 1 if the player quits
+	 * */
+	private int playPlayerTurn() {
 
 		int row = -1, col = -1;
-		while (row == -1 || col == -1 || ttt_board[row][col] != default_char) {
-			System.out.println("Enter the row and col for your entry - space (only) separated:");
-			row = scanner.nextInt();
-			col = scanner.nextInt();
+		boolean validEntry = false;
 
-			if (row < 0 || row > 2 || col < 0 || col > 2) {
-				System.out.println("Enter a valid row and col for your entry - space (only) separated:");
+		while (!validEntry) {
+			CBIOManager.rowColPrompt();
+			if (CBIOManager.readQuitInput()) {
+				return 1;
+			}
+
+			int[] inputs = CBIOManager.readIntegerInput(2);
+			if (inputs == null || inputs.length != 2 || inputs[0] < 0 || inputs[0] > 2 || inputs[1] < 0 || inputs[1] > 2) {
+				CBIOManager.invalidEntryMessage();
+				continue;
+			}
+			row = inputs[0];
+			col = inputs[1];
+			if (isOccupied(row, col)) {
+				CBIOManager.cellNotFreeMessage(row, col);
 				continue;
 			}
 
-			if (ttt_board[row][col] != default_char) {
-				System.out.println("The cell is already marked. Please try again.");
-			}
+
+			validEntry = true;
 		}
 
-		ttt_board[row][col] = player_char;
+		updateBoard(row, col);
+
+		return 0;
 	}
 
-	public void playComputerTurn() {
+	private void playComputerTurn() {}
 
+	private boolean isOccupied(int row, int col) {
+		return getBoard()[row][col] != default_char;
 	}
 }

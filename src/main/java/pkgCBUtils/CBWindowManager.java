@@ -1,17 +1,29 @@
 package pkgCBUtils;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
+import java.nio.IntBuffer;
+
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11C.glViewport;
 
 public class CBWindowManager {
-	private static GLFWFramebufferSizeCallback resizeWindow;
+	private static GLFWFramebufferSizeCallback resizeWindow = new GLFWFramebufferSizeCallback(){
+		@Override
+		public void invoke(long window, int width, int height){
+			glViewport(0,0,width, height);
+		}
+	};
+	;
 	private static CBWindowManager my_window;
 	private static long glfwWindow;
 	private static int win_height;
 	private static int win_width;
 
-	private CBWindowManager() {}
+	private CBWindowManager() {
+		initGlfwWindow();
+	}
 
 	public void updateContextToThis() {
 		glfwMakeContextCurrent(glfwWindow);
@@ -26,13 +38,20 @@ public class CBWindowManager {
 		return glfwWindow != 0;
 	}
 
-	public static CBWindowManager get(int a,int b) {
-		throw new RuntimeException("Not implemented yet");
+	public static CBWindowManager get(int width, int height) {
+		if (my_window == null) {
+			my_window = new CBWindowManager();
+		}
+
+		win_width = width;
+		win_height = height;
+		glfwSetWindowSize(glfwWindow, win_width, win_height);
+		return my_window;
 	}
 
 	public static CBWindowManager get(int width, int height, int orgX, int orgY) {
 		get(width, height);
-		setWindowPosition(width, height);
+		setWindowPosition(orgX, orgY);
 		return my_window;
 	}
 
@@ -43,29 +62,28 @@ public class CBWindowManager {
 	}
 
 	public static CBWindowManager get() {
-		throw new RuntimeException("Not implemented yet");
+		return get(win_width, win_height);
 	}
 
-	protected static void setWinWidth(int window, int width) {
-		throw new RuntimeException("Not implemented yet");
+	protected static void setWinWidth(int width, int height) {
+		glfwSetWindowSize(glfwWindow, width, height);
 	}
 
 	public void enableResizeWindowCallback() {
-		throw new RuntimeException("Not implemented yet");
+		glfwSetFramebufferSizeCallback(glfwWindow, resizeWindow);
 	}
 
 	public void swapBuffers() {
-		throw new RuntimeException("Not implemented yet");
+		glfwSwapBuffers(glfwWindow);
 	}
 
 	private static void initGlfwWindow() {
-
 		glfwWindow = glfwCreateWindow(win_width, win_height, "CB Window", 0, 0);
-
-		throw new RuntimeException("Not implemented yet");
 	}
 
 	public int[] getWindowSize() {
-		throw new RuntimeException("Not implemented yet");
+		IntBuffer windowSize = BufferUtils.createIntBuffer(2);
+		glfwGetWindowSize(glfwWindow, windowSize, windowSize);
+		return new int[]{windowSize.get(0), windowSize.get(1)};
 	}
 }

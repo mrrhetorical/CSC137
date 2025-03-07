@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11C.glViewport;
+import static org.lwjgl.opengl.GL11C.*;
 
 public class CBWindowManager {
 	private static GLFWFramebufferSizeCallback resizeWindow = new GLFWFramebufferSizeCallback(){
@@ -15,7 +15,7 @@ public class CBWindowManager {
 			glViewport(0,0,width, height);
 		}
 	};
-	;
+
 	private static CBWindowManager my_window;
 	private static long glfwWindow;
 	private static int win_height;
@@ -35,16 +35,17 @@ public class CBWindowManager {
 	}
 
 	public boolean isGlfwWindowClosed() {
-		return glfwWindow != 0;
+		return glfwWindowShouldClose(glfwWindow);
 	}
 
 	public static CBWindowManager get(int width, int height) {
+		win_width = width;
+		win_height = height;
+
 		if (my_window == null) {
 			my_window = new CBWindowManager();
 		}
 
-		win_width = width;
-		win_height = height;
 		glfwSetWindowSize(glfwWindow, win_width, win_height);
 		return my_window;
 	}
@@ -78,6 +79,12 @@ public class CBWindowManager {
 	}
 
 	private static void initGlfwWindow() {
+		if (!glfwInit())
+			throw new IllegalStateException("Unable to initialize GLFW");
+
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		glfwWindow = glfwCreateWindow(win_width, win_height, "CB Window", 0, 0);
 	}
 
